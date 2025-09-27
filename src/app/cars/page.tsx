@@ -2,23 +2,22 @@ import { Suspense } from "react";
 import { FilterX } from "lucide-react";
 
 import { MapContainer } from "@/components/map-container";
-import { SearchForm } from "@/components/search-form";
-import { CarCatalogSkeleton } from "@/components/skeletons/car-catalog-skeleton";
-import { SearchFormSkeleton } from "@/components/skeletons/search-form-skeleton";
+import { SearchForm } from "@/components/search/search-form";
+import { CarCatalogSkeleton, SearchFormSkeleton } from "@/components/skeletons";
+import { CarFilters } from "@/components/cars/car-filters";
 import { fetchCars, fetchLocations } from "@/lib/db/queries";
-import { SearchParams } from "@/lib/enums";
+import { SEARCH_PARAMS } from "@/lib/constants";
 import { slugify } from "@/lib/utils";
 import { CarCard } from "./car-card";
-import { Filters } from "./filters";
 
 type CarsPageProps = {
   searchParams: {
-    [SearchParams.MIN_PRICE]?: string;
-    [SearchParams.MAX_PRICE]?: string;
-    [SearchParams.BODY_STYLE]?: string[];
-    [SearchParams.ENGINE_TYPE]?: string[];
-    [SearchParams.TRANSMISSION]?: string[];
-    [SearchParams.MIN_SEATS]?: string;
+    [SEARCH_PARAMS.MIN_PRICE]?: string;
+    [SEARCH_PARAMS.MAX_PRICE]?: string;
+    [SEARCH_PARAMS.BODY_STYLE]?: string[];
+    [SEARCH_PARAMS.ENGINE_TYPE]?: string[];
+    [SEARCH_PARAMS.TRANSMISSION]?: string[];
+    [SEARCH_PARAMS.MIN_SEATS]?: string;
   };
 };
 
@@ -32,12 +31,12 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
   let filteredCars = cars;
 
   const {
-    [SearchParams.MIN_PRICE]: minPrice,
-    [SearchParams.MAX_PRICE]: maxPrice,
-    [SearchParams.BODY_STYLE]: bodyStyles,
-    [SearchParams.ENGINE_TYPE]: engineTypes,
-    [SearchParams.TRANSMISSION]: transmissions,
-    [SearchParams.MIN_SEATS]: minSeats,
+    [SEARCH_PARAMS.MIN_PRICE]: minPrice,
+    [SEARCH_PARAMS.MAX_PRICE]: maxPrice,
+    [SEARCH_PARAMS.BODY_STYLE]: bodyStyles,
+    [SEARCH_PARAMS.ENGINE_TYPE]: engineTypes,
+    [SEARCH_PARAMS.TRANSMISSION]: transmissions,
+    [SEARCH_PARAMS.MIN_SEATS]: minSeats,
   } = searchParams;
 
   if (minPrice) {
@@ -92,7 +91,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
               </Suspense>
             </div>
 
-            <Filters
+            <CarFilters
               initialMinPrice={Math.min(...carPrices)}
               initialMaxPrice={Math.max(...carPrices)}
             />

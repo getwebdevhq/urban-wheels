@@ -13,20 +13,19 @@ import type { StaticImageData } from "next/image";
 
 import { Icons } from "@/components/icons";
 import { LogoSlider } from "@/components/logo-slider";
-import { SearchForm } from "@/components/search-form";
-import { SearchFormSkeleton } from "@/components/skeletons/search-form-skeleton";
+import { SearchForm } from "@/components/search/search-form";
+import { SearchFormSkeleton } from "@/components/skeletons";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { siteConfig } from "@/config/site";
+import { APP_CONFIG, SEARCH_PARAMS, PRICING } from "@/lib/constants";
 import {
   fetchFeaturedLocations,
   fetchLocations,
   fetchTestimonials,
   getMinPriceFromCars,
 } from "@/lib/db/queries";
-import { SearchParams } from "@/lib/enums";
 import { formatCurrency, getGitHubStars } from "@/lib/utils";
 import {
   hatchback,
@@ -37,7 +36,25 @@ import {
   suv,
 } from "@/public/images/cars/body-styles";
 import { cancun, dubai, paris, rome } from "@/public/images/locations";
-import { bodyStyles } from "./cars/filters/body-styles";
+import { CAR_SPECS } from "@/lib/constants";
+
+const bodyStyleImages: Record<string, StaticImageData> = {
+  [CAR_SPECS.BODY_STYLE.HATCHBACK]: hatchback,
+  [CAR_SPECS.BODY_STYLE.MINIVAN]: minivan,
+  [CAR_SPECS.BODY_STYLE.PICKUP_TRUCK]: pickupTruck,
+  [CAR_SPECS.BODY_STYLE.SPORTS_CAR]: sportsCar,
+  [CAR_SPECS.BODY_STYLE.SUV]: suv,
+  [CAR_SPECS.BODY_STYLE.SEDAN]: sedan,
+};
+
+const bodyStyleOptions = [
+  { slug: CAR_SPECS.BODY_STYLE.HATCHBACK, name: "Hatchback" },
+  { slug: CAR_SPECS.BODY_STYLE.MINIVAN, name: "Minivan" },
+  { slug: CAR_SPECS.BODY_STYLE.PICKUP_TRUCK, name: "Pickup Truck" },
+  { slug: CAR_SPECS.BODY_STYLE.SPORTS_CAR, name: "Sports Car" },
+  { slug: CAR_SPECS.BODY_STYLE.SUV, name: "SUV" },
+  { slug: CAR_SPECS.BODY_STYLE.SEDAN, name: "Sedan" },
+];
 
 export default async function Page() {
   return (
@@ -88,15 +105,6 @@ async function Hero() {
 }
 
 function BodyStyleCarExplorer() {
-  const imageMap: { [key: string]: StaticImageData } = {
-    hatchback: hatchback,
-    minivan: minivan,
-    "pickup-truck": pickupTruck,
-    "sports-car": sportsCar,
-    suv: suv,
-    sedan: sedan,
-  };
-
   return (
     <section className="container pt-10">
       <h2 className="font-heading text-2xl">Popular Rental Car Choices</h2>
@@ -107,8 +115,8 @@ function BodyStyleCarExplorer() {
       <div className="before:from-background after:from-background relative mt-8 before:absolute before:left-0 before:top-0 before:z-10 before:h-full before:w-[10%] before:bg-gradient-to-r after:absolute after:right-0 after:top-0 after:z-10 after:h-full after:w-[10%] after:bg-gradient-to-l">
         <ScrollArea>
           <div className="mb-4 space-x-2 whitespace-nowrap">
-            {bodyStyles.map(({ slug, name }) => {
-              const imageUrl = imageMap[slug];
+            {bodyStyleOptions.map(({ slug, name }) => {
+              const imageUrl = bodyStyleImages[slug];
 
               return (
                 <div
@@ -118,7 +126,7 @@ function BodyStyleCarExplorer() {
                   <Link
                     href={{
                       pathname: "/cars",
-                      query: { [SearchParams.BODY_STYLE]: slug },
+                      query: { [SEARCH_PARAMS.BODY_STYLE]: slug },
                     }}
                     className="absolute inset-0 z-20"
                   >
@@ -161,7 +169,6 @@ async function DestinationCarExplorer() {
     rome: rome,
   };
 
-  const currency = "INR";
   const [featuredLocations, minPrice] = await Promise.all([
     fetchFeaturedLocations(),
     getMinPriceFromCars(),
@@ -185,7 +192,7 @@ async function DestinationCarExplorer() {
               key={id}
               href={{
                 pathname: "/cars",
-                query: { [SearchParams.LOCATION]: value },
+                query: { [SEARCH_PARAMS.LOCATION]: value },
               }}
               className="px-1.5 pb-4 pt-1"
             >
@@ -207,7 +214,7 @@ async function DestinationCarExplorer() {
                 <h3 className="text-sm font-semibold">{name}</h3>
                 {minPrice && (
                   <p className="text-muted-foreground mt-1 text-sm">
-                    Cars from {formatCurrency(minPrice, currency)}+
+                    Cars from {formatCurrency(minPrice, PRICING.CURRENCY)}+
                   </p>
                 )}
               </div>
@@ -282,7 +289,7 @@ async function Testimonials() {
             <div key={id} className="pt-4">
               <figure className="bg-muted rounded-2xl border p-8 duration-200 hover:shadow-md">
                 <blockquote className="text-sm leading-6">
-                  <em>“{comment}”</em>
+                  <em>"{comment}"</em>
                 </blockquote>
 
                 <figcaption className="mt-6 flex items-center justify-start gap-5">
@@ -344,10 +351,10 @@ async function OpenSource() {
         </h2>
 
         <p className="text-muted-foreground max-w-[85%] sm:text-lg">
-          {siteConfig.name} is open source and powered by open source software.{" "}
+          {APP_CONFIG.name} is open source and powered by open source software.{" "}
           <br /> The code is available on{" "}
           <Link
-            href={siteConfig.links.github}
+            href={APP_CONFIG.links.github}
             target="_blank"
             rel="noreferrer"
             className="hover:text-foreground underline underline-offset-4 duration-200"
@@ -359,7 +366,7 @@ async function OpenSource() {
 
         {stars && (
           <Link
-            href={siteConfig.links.github}
+            href={APP_CONFIG.links.github}
             target="_blank"
             rel="noreferrer"
             className="flex"

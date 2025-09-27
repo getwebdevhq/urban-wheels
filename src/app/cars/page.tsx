@@ -1,11 +1,10 @@
 import { Suspense } from "react";
 import { FilterX } from "lucide-react";
 
-import { MapContainer } from "@/components/map-container";
 import { SearchForm } from "@/components/search/search-form";
 import { CarCatalogSkeleton, SearchFormSkeleton } from "@/components/skeletons";
 import { CarFilters } from "@/components/cars/car-filters";
-import { fetchCars, fetchLocations } from "@/lib/db/queries";
+import { fetchCars, fetchLocations } from "@/lib/data";
 import { SEARCH_PARAMS } from "@/lib/constants";
 import { slugify } from "@/lib/utils";
 import { CarCard } from "./car-card";
@@ -100,7 +99,7 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
       </div>
 
       <div className="relative flex lg:min-h-[calc(100dvh-8rem)]">
-        <div className="w-full overflow-y-auto lg:w-[55%] xl:w-[63%]">
+        <div className="w-full overflow-y-auto">
           <Suspense fallback={<CarCatalogSkeleton />}>
             <div className="p-4 sm:px-2 lg:py-2">
               {filteredCars.length ?
@@ -121,12 +120,6 @@ export default async function CarsPage({ searchParams }: CarsPageProps) {
               }
             </div>
           </Suspense>
-        </div>
-
-        <div className="hidden flex-auto lg:block">
-          <div className="sticky top-[calc(8rem+1px)] my-2 mr-2 flex min-h-[calc(100dvh-8.5rem)] overflow-hidden rounded-md border">
-            <MapContainer />
-          </div>
         </div>
       </div>
     </>

@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { fetchCarBySlug } from "@/lib/db/queries";
+import { fetchCarBySlug } from "@/lib/data";
 import { cn, formatCurrency } from "@/lib/utils";
 import { CarDetailsButton } from "./details-button";
 

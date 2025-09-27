@@ -4,7 +4,7 @@ import { Check, Gift, LifeBuoy, Map } from "lucide-react";
 
 import type { Metadata } from "next";
 
-import { fetchCarBySlug, fetchCars, fetchLocations } from "@/lib/db/queries";
+import { fetchCarBySlug, fetchCars, fetchLocations } from "@/lib/data";
 import { ReservationSidebar } from "./reservation-sidebar";
 
 type CarPageProps = {

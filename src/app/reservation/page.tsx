@@ -4,17 +4,17 @@ import { Star } from "lucide-react";
 
 import { Separator } from "@/components/ui/separator";
 import { fetchCarBySlug, fetchLocationByValue } from "@/lib/db/queries";
-import { SearchParams } from "@/lib/enums";
+import { SEARCH_PARAMS } from "@/lib/constants";
 import { formatCurrency, formatDates } from "@/lib/utils";
 import { NavigateBack } from "./navigate-back";
 import { PayButton } from "./pay-button";
 
 type ReservationPageProps = {
   searchParams: {
-    [SearchParams.CAR_SLUG]: string;
-    [SearchParams.LOCATION]: string;
-    [SearchParams.CHECKIN]: string;
-    [SearchParams.CHECKOUT]: string;
+    [SEARCH_PARAMS.CAR_SLUG]: string;
+    [SEARCH_PARAMS.LOCATION]: string;
+    [SEARCH_PARAMS.CHECKIN]: string;
+    [SEARCH_PARAMS.CHECKOUT]: string;
   };
 };
 
@@ -23,7 +23,7 @@ export default async function ReservationPage(props: ReservationPageProps) {
     checkin,
     checkout,
     location: locationSlug,
-    [SearchParams.CAR_SLUG]: carSlug,
+    [SEARCH_PARAMS.CAR_SLUG]: carSlug,
   } = props.searchParams;
 
   const [car, location] = await Promise.allSettled([

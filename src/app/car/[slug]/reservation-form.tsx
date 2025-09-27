@@ -1,15 +1,11 @@
 "use client";
 
-import React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { addDays, differenceInDays, format, isAfter } from "date-fns";
+import { format, addDays } from "date-fns";
 import { Check } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import type { Location } from "@/lib/db/definitions";
 
+import { useBookingForm } from "@/hooks/use-booking-form";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,28 +27,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { SearchParams } from "@/lib/enums";
-import { cn, createUrl, formatCurrency } from "@/lib/utils";
-
-const FormSchema = z
-  .object({
-    location: z.string({ required_error: "Location is required" }),
-    checkin: z.date({ required_error: "Check in is required" }),
-    checkout: z.date({ required_error: "Check out is required" }),
-  })
-  .refine((schema) => isAfter(schema.checkout, schema.checkin), {
-    message: "Check out must be after check in",
-    path: ["checkout"],
-  })
-  .refine(
-    ({ checkin, checkout }) => differenceInDays(checkout, checkin) <= 30,
-    {
-      message: "Maximum 30 days allowed for booking",
-      path: ["checkout"],
-    }
-  );
-
-type FormData = z.infer<typeof FormSchema>;
+import { cn, formatCurrency } from "@/lib/utils";
 
 type ReservationFormProps = {
   carSlug: string;
@@ -63,86 +38,17 @@ type ReservationFormProps = {
 
 export function ReservationForm(props: ReservationFormProps) {
   const { carSlug, locations, pricePerDay, currency } = props;
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const [days, setDays] = React.useState<number>();
-  const [subtotal, setSubtotal] = React.useState<number>();
-  const [taxesAndFees, setTaxesAndFees] = React.useState<number>();
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(FormSchema),
+  
+  const { form, pricing, onSubmit } = useBookingForm({
+    carSlug,
+    pricePerDay,
+    currency,
   });
-
-  function onSubmit(values: FormData) {
-    const { location, checkin, checkout } = values;
-
-    const newParams = new URLSearchParams(searchParams.toString());
-
-    newParams.set(SearchParams.CAR_SLUG, carSlug);
-    newParams.set(SearchParams.LOCATION, location);
-    newParams.set(SearchParams.CHECKIN, checkin.toISOString());
-    newParams.set(SearchParams.CHECKOUT, checkout.toISOString());
-
-    console.log({ location, checkin, checkout });
-    router.push(createUrl("/reservation", newParams));
-  }
-
-  const calculateTotal = React.useCallback(() => {
-    const checkin = form.getValues("checkin");
-    const checkout = form.getValues("checkout");
-
-    if (checkin && checkout && isAfter(checkout, checkin)) {
-      const calculatedDays = differenceInDays(checkout, checkin);
-      const calculatedSubtotal = pricePerDay * calculatedDays;
-      const calculatedTaxesAndFees = calculatedSubtotal * 0.16;
-
-      setDays(calculatedDays);
-      setSubtotal(calculatedSubtotal);
-      setTaxesAndFees(calculatedTaxesAndFees);
-    } else {
-      // Reset values if either check-in or checkout is not set or if checkout is not after check-in
-      setDays(undefined);
-      setSubtotal(undefined);
-      setTaxesAndFees(undefined);
-    }
-  }, [form, pricePerDay]);
-
-  React.useEffect(() => {
-    const location = searchParams.get(SearchParams.LOCATION);
-    const checkin = searchParams.get(SearchParams.CHECKIN);
-    const checkout = searchParams.get(SearchParams.CHECKOUT);
-
-    if (location) form.setValue("location", location);
-    if (checkin) form.setValue("checkin", new Date(checkin));
-    if (checkout) form.setValue("checkout", new Date(checkout));
-
-    calculateTotal();
-
-    return () => {
-      form.resetField("location");
-      form.resetField("checkin");
-      form.resetField("checkout");
-    };
-  }, [searchParams, form, calculateTotal]);
-
-  React.useEffect(() => {
-    const subscription = form.watch(({ checkin, checkout }) => {
-      if (checkin && checkout) {
-        calculateTotal();
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [form, calculateTotal]);
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={onSubmit}>
           <div className="mt-6 w-full rounded-xl border">
             <FormField
               control={form.control}
@@ -301,19 +207,19 @@ export function ReservationForm(props: ReservationFormProps) {
       <div className="text-muted-foreground mt-4">
         <div className="flex items-center justify-between">
           <p>
-            {formatCurrency(pricePerDay, currency)} x {days ? days : "—"}{" "}
-            {days ?
-              days > 1 ?
+            {formatCurrency(pricePerDay, currency)} x {pricing.days || "—"}{" "}
+            {pricing.days ?
+              pricing.days > 1 ?
                 "days"
               : "day"
             : "days"}{" "}
           </p>
-          <p>{subtotal ? formatCurrency(subtotal, currency) : "—"}</p>
+          <p>{pricing.subtotal ? formatCurrency(pricing.subtotal, currency) : "—"}</p>
         </div>
 
         <div className="mt-1 flex items-center justify-between">
           <p>Taxes and fees</p>
-          <p>{taxesAndFees ? formatCurrency(taxesAndFees, currency) : "—"}</p>
+          <p>{pricing.taxesAndFees ? formatCurrency(pricing.taxesAndFees, currency) : "—"}</p>
         </div>
 
         <hr className="my-4" />
@@ -321,9 +227,8 @@ export function ReservationForm(props: ReservationFormProps) {
         <div className="text-foreground flex items-center justify-between font-semibold">
           <p>Total (taxes included)</p>
           <p>
-            {" "}
-            {subtotal && taxesAndFees ?
-              formatCurrency(subtotal + taxesAndFees, currency)
+            {pricing.total ?
+              formatCurrency(pricing.total, currency)
             : "—"}
           </p>
         </div>

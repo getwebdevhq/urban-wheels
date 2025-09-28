@@ -3,12 +3,12 @@
 [![ntl-badge]][ntl-link] ![views] ![hits] ![stars] ![forks] ![issues] ![license] ![repo-size]
 
 <a href="https://urban-wheels.rajputhemant.me">
-  <img src="https://github.com/rajput-hemant/urban-wheels/blob/master/src/app/opengraph-image.png?raw=true" alt="A car rental service website built with Next.js, Tailwind CSS & shadcn/ui.">
+  <img src="https://github.com/rajput-hemant/urban-wheels/blob/master/src/app/opengraph-image.png?raw=true" alt="A lightweight car rental service website built with Next.js, Tailwind CSS & shadcn/ui.">
 </a>
 
 # Urban Wheels
 
-### A car rental service website built with Next.js, Tailwind CSS & shadcn/ui.
+### A lightweight car rental service website built with Next.js, Tailwind CSS & shadcn/ui.
 
 </div>
 
@@ -19,25 +19,67 @@ To run this project locally, you will need to clone this repository
 Once that's done, you can use the following commands to run the app locally:
 
 ```
-bun i
+npm install
+npm run dev
+```
+
+Or with other package managers:
+
+```
+yarn install
+yarn dev
+```
+
+```
+pnpm install
+pnpm dev
+```
+
+```
+bun install
 bun dev
 ```
 
 ## Tech Stack
 
 - [Next.js](https://nextjs.org/) – The React Framework for the Web
-- [Typescript](https://www.typescriptlang.org/) – Typed JavaScript at Any Scale.
-- [shadcn/ui](https://ui.shadcn.com/) – A set of accessible UI components, based on [Radix UI](https://radix-ui.com/) primitives.
-- [Tailwind](https://tailwindcss.com/) – A utility-first CSS framework for rapid UI development.
-- [Supabase](https://supabase.com/) – The open source Firebase alternative.
-- [Drizzle ORM](https://orm.drizzle.team/) – Typescript ORM that is production-ready.
+- [TypeScript](https://www.typescriptlang.org/) – Typed JavaScript at Any Scale
+- [shadcn/ui](https://ui.shadcn.com/) – A set of accessible UI components, based on [Radix UI](https://radix-ui.com/) primitives
+- [Tailwind CSS](https://tailwindcss.com/) – A utility-first CSS framework for rapid UI development
+- [Lucide React](https://lucide.dev/) – Beautiful & consistent icon toolkit
+- [React Hook Form](https://react-hook-form.com/) – Performant, flexible forms with easy validation
+- [Zod](https://zod.dev/) – TypeScript-first schema validation
+
+## Features
+
+- 🚗 **Car Browsing** - Browse through a curated selection of rental cars
+- 🔍 **Advanced Search** - Filter cars by location, dates, price, and specifications
+- 📱 **Responsive Design** - Optimized for all devices and screen sizes
+- 🎨 **Modern UI** - Clean, accessible interface built with shadcn/ui components
+- ⚡ **Fast Performance** - Lightweight frontend-only architecture
+- 🌙 **Dark Mode** - Toggle between light and dark themes
+- 📊 **Interactive Filters** - Real-time filtering by body style, engine type, transmission, and more
+
+## Project Structure
+
+```
+src/
+├── app/                 # Next.js app router pages
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── search/         # Search and filtering components
+│   └── cars/           # Car-related components
+├── lib/                # Utility functions and data
+├── hooks/              # Custom React hooks
+└── styles/             # Global styles and themes
+```
 
 ## Contributing
 
 We love our contributors! Here's how you can contribute:
 
-- [Open an issue](https://github.com/rajput-hemant/urban-wheels/issues) if you believe you've encountered a bug.
-- Make a [pull request](https://github.com/rajput-hemant/urban-wheels/pull) to add new features/make quality-of-life improvements/fix bugs.
+- [Open an issue](https://github.com/rajput-hemant/urban-wheels/issues) if you believe you've encountered a bug
+- Make a [pull request](https://github.com/rajput-hemant/urban-wheels/pull) to add new features/make quality-of-life improvements/fix bugs
 
 ## License
 

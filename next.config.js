@@ -1,6 +1,3 @@
-// This is validation for the environment variables early in the build process.
-await import("./src/lib/env.ts");
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
